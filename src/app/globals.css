@@ -1,8 +1,37 @@
 @import "tailwindcss";
 
 :root {
+  /* Core colors */
   --background: #ffffff;
   --foreground: #171717;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  --ring: #8b5cf6; /* accent for focus rings in dev */
+  --primary: #6d28d9;
+  --primary-foreground: #ffffff;
+  --accent: #8b5cf6;
+  --accent-foreground: #0a0a0a;
+  /* Background lines effect variables (light) */
+  --bg-line: rgba(0, 0, 0, 0.08);
+  --bg-line-glow: rgba(0, 0, 0, 0.45);
+}
+
+/* Dark mode via class (next-themes) */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --muted: #111827;
+  --muted-foreground: #9ca3af;
+  --border: #1f2937;
+  --ring: #a78bfa;
+  --primary: #8b5cf6;
+  --primary-foreground: #0a0a0a;
+  --accent: #a78bfa;
+  --accent-foreground: #0a0a0a;
+  /* Background lines effect variables (dark) */
+  --bg-line: rgba(255, 255, 255, 0.08);
+  --bg-line-glow: rgba(255, 255, 255, 1);
 }
 
 @theme inline {
@@ -12,15 +41,74 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
+
+::selection { background: #8b5cf6; color: #ffffff; }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+code, pre, kbd, samp {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Background animated lines (non-interactive, behind content) */
+.bg-lines {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-lines .lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  margin: auto;
+  width: 90vw;
+}
+.bg-lines .line {
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  background: var(--bg-line);
+  overflow: hidden;
+}
+.bg-lines .line::after {
+  content: "";
+  display: block;
+  position: absolute;
+  height: 15vh;
+  width: 100%;
+  top: -50%;
+  left: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--bg-line-glow) 75%, var(--bg-line-glow) 100%);
+  animation: drop 7s 0s infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+.bg-lines .line:nth-child(1) { margin-left: -25%; }
+.bg-lines .line:nth-child(1)::after { animation-delay: 2s; }
+.bg-lines .line:nth-child(3) { margin-left: 25%; }
+.bg-lines .line:nth-child(3)::after { animation-delay: 2.5s; }
+
+@keyframes drop {
+  0% { top: -50%; }
+  100% { top: 110%; }
 }

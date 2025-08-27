@@ -1,103 +1,116 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { useGsapContext } from "@/lib/gsap";
+import Card from "@/components/Card";
+import { HeroRotator } from "./components/hero/HeroRotator";
+import type { AnimeItem } from "./components/hero/types";
+import { useMemo } from "react";
+
+function Row({ title, href, items, prioritizeFirstImage = false }: { title: string; href: string; items: any[]; prioritizeFirstImage?: boolean }) {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <section className="space-y-2">
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-xl font-semibold">{title}</h2>
+        <Link href={href} className="text-sm underline">See all</Link>
+      </div>
+      <div className="overflow-x-auto">
+        <div className="flex gap-3 min-w-max pr-2">
+          {items.map((it, i) => (
+            <div key={it.id} className="w-40 shrink-0">
+              <Card item={it} priority={prioritizeFirstImage && i === 0} />
+            </div>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    </section>
+  );
+}
+
+export default function HomePage() {
+  const ref = useGsapContext((gsap, el) => {
+    const hero = el.querySelector(".hero");
+    if (hero) gsap.fromTo(hero, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 });
+  });
+
+  const { data: trending } = useQuery({
+    queryKey: ["home", "trending"],
+    queryFn: async () => {
+      const res = await fetch(`/api/v1/list/trending?page=1&limit=12`);
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const now = new Date();
+  const month = now.getUTCMonth() + 1;
+  const year = now.getUTCFullYear();
+  const season = month === 12 || month <= 2 ? "WINTER" : month <= 5 ? "SPRING" : month <= 8 ? "SUMMER" : "FALL";
+
+  const { data: seasonal } = useQuery({
+    queryKey: ["home", "seasonal", season, year],
+    queryFn: async () => {
+      const res = await fetch(`/api/v1/list/seasonal?season=${season}&year=${year}&limit=12`);
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: airing } = useQuery({
+    queryKey: ["home", "airing"],
+    queryFn: async () => {
+      const res = await fetch(`/api/v1/list/airing?limit=30`);
+      if (!res.ok) throw new Error(await res.text());
+      const json = await res.json();
+      // Filter to items airing today
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+      const startSec = Math.floor(startOfDay.getTime() / 1000);
+      const endSec = Math.floor(endOfDay.getTime() / 1000);
+      const todayItems = (json.items || []).filter((it: any) => it.next && it.next.airingAt >= startSec && it.next.airingAt < endSec).slice(0, 12);
+      return { items: todayItems };
+    },
+    staleTime: 60 * 1000,
+  });
+
+  const heroItems: AnimeItem[] = useMemo(() => {
+    const src = Array.isArray(trending?.items) ? trending!.items as any[] : [];
+    return src
+      .filter((it) => !!it.cover)
+      .slice(0, 6)
+      .map((it) => ({
+        id: String(it.id),
+        title: String(it.title ?? ""),
+        coverUrl: String(it.cover),
+        durationMs: 24 * 60 * 1000,
+      }));
+  }, [trending]);
+
+  return (
+    <div ref={ref} className="space-y-8">
+      {heroItems.length > 0 ? (
+        <HeroRotator
+          items={heroItems}
+          intervalMs={7000}
+          onResume={(id) => { /* hook up to player resume here */ }}
+          onStart={(id) => { /* start from 0 */ }}
+          onWatchTrailer={(id) => { /* open trailer modal */ }}
+          onMarkWatched={(id) => { /* mark watched in store/db */ }}
+        />
+      ) : null}
+
+      <section className="hero rounded-lg border p-10 bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-slate-950">
+        <h1 className="text-3xl font-bold">Welcome to animex</h1>
+        <p className="opacity-80 mt-2">Browse anime via AniList. Try Trending, Seasonal, and Airing now.</p>
+      </section>
+
+      {trending?.items?.length ? <Row title="Trending now" href="/trending" items={trending.items} prioritizeFirstImage /> : null}
+      {seasonal?.items?.length ? <Row title={`This season (${season} ${year})`} href={`/season?season=${season}&year=${year}`} items={seasonal.items} /> : null}
+      {airing?.items?.length ? <Row title="Airing today" href="/airing" items={airing.items} /> : null}
     </div>
   );
 }
