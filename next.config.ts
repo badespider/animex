@@ -6,6 +6,11 @@ const baseConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // Allow production builds to succeed even if ESLint finds issues.
+  // We still lint in CI or locally, but we don't block deploys.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**" },
