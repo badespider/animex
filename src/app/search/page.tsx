@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchBar from "@/components/search/SearchBar";
 import SearchResults from "@/components/search/SearchResults";
@@ -11,7 +11,7 @@ import type { SearchItem } from "@/lib/normalize";
 type APIResponse = { items: SearchItem[]; page: number; total: number };
 const LIMIT = 20;
 
-export default function SearchPage() {
+function SearchContent() {
   const router = useRouter();
   const search = useSearchParams();
   const initialQ = search?.get("q") ?? "";
@@ -85,5 +85,13 @@ export default function SearchPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="space-y-4" aria-busy>Loading…</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

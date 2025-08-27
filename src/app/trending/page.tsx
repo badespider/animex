@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchResults from "@/components/search/SearchResults";
@@ -12,7 +12,7 @@ const STATUSES = ["RELEASING", "FINISHED", "NOT_YET_RELEASED"] as const;
 const SORTS = ["TRENDING", "POPULARITY", "SCORE"] as const;
 const DEFAULT_SORT = "TRENDING" as const;
 
-export default function TrendingPage() {
+function TrendingContent() {
   const router = useRouter();
   const search = useSearchParams();
   const page = Math.max(1, Number(search?.get("page") ?? 1) || 1);
@@ -110,6 +110,14 @@ export default function TrendingPage() {
       <SearchResults items={data?.items ?? []} loading={isLoading} error={isError ? String(error) : undefined} />
       <Pagination page={page} total={data?.total} limit={LIMIT} onChange={onChange} />
     </div>
+  );
+}
+
+export default function TrendingPage() {
+  return (
+    <Suspense fallback={<div className="space-y-4" aria-busy>Loading…</div>}>
+      <TrendingContent />
+    </Suspense>
   );
 }
 

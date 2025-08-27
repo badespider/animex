@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -12,7 +13,7 @@ function fmtLocal(sec?: number) {
   try { return new Date(sec * 1000).toLocaleString(); } catch { return String(sec); }
 }
 
-export default function AiringPage() {
+function AiringContent() {
   const router = useRouter();
   const search = useSearchParams();
   const page = Math.max(1, Number(search?.get("page") ?? 1) || 1);
@@ -36,7 +37,7 @@ export default function AiringPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" key={page}>
       <h1 className="text-2xl font-bold">Airing (next 7 days)</h1>
       {/* Filter summary (static for now) */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -75,6 +76,14 @@ export default function AiringPage() {
       )}
       <Pagination page={page} total={data?.total} limit={LIMIT} onChange={onChange} />
     </div>
+  );
+}
+
+export default function AiringPage() {
+  return (
+    <Suspense fallback={<div className="space-y-4" aria-busy>Loading…</div>}>
+      <AiringContent />
+    </Suspense>
   );
 }
 
