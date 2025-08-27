@@ -50,7 +50,8 @@ const baseConfig: NextConfig = {
     }
 
     // Production: keep your existing strict policy
-    const allowedFrames = (process.env.ALLOWED_IFRAME_HOSTS ?? "").split(/[\s,]+/).filter(Boolean);
+    // Allowlist iframe hosts (trailers): default to YouTube if env not set
+    const allowedFrames = (process.env.ALLOWED_IFRAME_HOSTS ?? "www.youtube.com www.youtube-nocookie.com").split(/[\s,]+/).filter(Boolean);
     const frameSrc = allowedFrames.length ? ["'self'", ...allowedFrames.map(h => `https://${h}`)].join(" ") : "'none'";
     const csp = [
       "default-src 'self';",
