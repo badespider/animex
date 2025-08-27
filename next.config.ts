@@ -54,11 +54,15 @@ const baseConfig: NextConfig = {
     const frameSrc = allowedFrames.length ? ["'self'", ...allowedFrames.map(h => `https://${h}`)].join(" ") : "'none'";
     const csp = [
       "default-src 'self';",
+      // Allow Next.js runtime scripts and inline bootstraps
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:;",
       "style-src 'self' 'unsafe-inline';",
       "img-src 'self' data: blob: https: http:;",
       "connect-src 'self' https: http:;",
       `frame-src ${frameSrc};`,
       "font-src 'self' data: https:;",
+      // Allow web workers if needed (Next/Turbopack)
+      "worker-src 'self' blob:;",
       "object-src 'none';",
       "base-uri 'self';",
       "form-action 'self';",
