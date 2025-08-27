@@ -10,9 +10,12 @@ async function getAnime(id: string): Promise<AnimeInfoResponse> {
   const h = await headers();
   const host = h.get("host") ?? "localhost:3000";
   const proto = h.get("x-forwarded-proto") ?? "http";
+  const cookie = h.get("cookie") ?? "";
   const base = `${proto}://${host}`;
   const res = await fetch(`${base}/api/v1/anime/${encodeURIComponent(id)}`, {
     cache: "no-store",
+    // Forward cookies so protected preview/prod environments authorize the server-side fetch too
+    headers: { cookie },
   });
   if (res.status === 404) {
     notFound();
@@ -29,8 +32,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const h = await headers();
     const host = h.get("host") ?? "localhost:3000";
     const proto = h.get("x-forwarded-proto") ?? "http";
+    const cookie = h.get("cookie") ?? "";
     const base = `${proto}://${host}`;
-    const res = await fetch(`${base}/api/v1/anime/${encodeURIComponent(id)}`, { cache: "no-store" });
+    const res = await fetch(`${base}/api/v1/anime/${encodeURIComponent(id)}`, { cache: "no-store", headers: { cookie } });
     if (!res.ok) return { title: "Anime", description: "Anime details" };
     const data = (await res.json()) as AnimeInfoResponse;
     const a = data.anime;
