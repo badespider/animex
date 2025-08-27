@@ -103,7 +103,7 @@ export default function HomePage() {
         />
       ) : null}
 
-      <section className="hero rounded-lg border p-10 bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-slate-950">
+      <section className="hero rounded-lg border p-6 md:p-10 bg-gradient-to-br from-slate-100 to-white dark:from-slate-900 dark:to-slate-950">
         <h1 className="text-3xl font-bold">Welcome to animex</h1>
         <p className="opacity-80 mt-2">Browse anime via AniList. Try Trending, Seasonal, and Airing now.</p>
       </section>

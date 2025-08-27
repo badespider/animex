@@ -11,9 +11,9 @@ export default function SiteHeader() {
 
   return (
     <div className="sticky top-0 z-40 border-b bg-[var(--background)]/80 backdrop-blur">
-      <div className="max-w-6xl mx-auto flex items-center gap-4 p-3">
-        <Link href="/" className="font-bold text-lg">animex</Link>
-        <nav className="flex items-center gap-2" aria-label="Primary">
+      <div className="max-w-6xl mx-auto flex items-center gap-3 p-2 md:p-3">
+        <Link href="/" className="font-bold text-base md:text-lg">animex</Link>
+        <nav className="flex items-center gap-1 md:gap-2 overflow-x-auto whitespace-nowrap -mx-2 px-2 text-sm md:text-base" aria-label="Primary">
           <Link className={`${linkBase} ${pathname === "/search" ? active : ""}`} href="/search">Search</Link>
           <Link className={`${linkBase} ${pathname === "/trending" ? active : ""}`} href="/trending">Trending</Link>
           <Link className={`${linkBase} ${pathname === "/popular" ? active : ""}`} href="/popular">Popular</Link>

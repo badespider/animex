@@ -26,7 +26,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({ item, onResume, onStart, onW
 
   return (
     <section
-      className="relative rounded-lg overflow-hidden border bg-black/5 min-h-[360px] md:min-h-[440px]"
+      className="relative rounded-lg overflow-hidden border bg-black/5 min-h-[300px] md:min-h-[440px]"
       role="region"
       aria-label={`Featured: ${item.title}`}
     >

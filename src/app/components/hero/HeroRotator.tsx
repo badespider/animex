@@ -160,7 +160,7 @@ export const HeroRotator: React.FC<HeroRotatorProps> = ({
         <>
           <button
             onClick={goPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-3 md:p-2 hover:bg-black/60"
             aria-label="Previous"
             title="Previous"
           >
@@ -168,7 +168,7 @@ export const HeroRotator: React.FC<HeroRotatorProps> = ({
           </button>
           <button
             onClick={goNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-3 md:p-2 hover:bg-black/60"
             aria-label="Next"
             title="Next"
           >
@@ -183,7 +183,7 @@ export const HeroRotator: React.FC<HeroRotatorProps> = ({
                 <button
                   key={it.id}
                   onClick={() => setIndex(i)}
-                  className={`h-2.5 w-2.5 rounded-full ${active ? 'bg-white' : 'bg-white/40 hover:bg-white/60'}`}
+                  className={`${active ? 'bg-white' : 'bg-white/40 hover:bg-white/60'} rounded-full h-3 w-3 md:h-2.5 md:w-2.5`}
                   aria-label={`Show ${it.title}`}
                   aria-current={active ? 'true' : undefined}
                   title={it.title}
